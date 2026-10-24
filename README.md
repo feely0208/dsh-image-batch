@@ -59,7 +59,7 @@ dsh-image-batch strip --input ./外发 --out ./外发_干净
 - ❌ 不支持 `.gif`（动图会只剩一帧，所以直接跳过）、`.heic`、`.heif`、`.bmp`、`.tiff`、`.svg`、`.psd`、`.avif`；
   手机 HEIC 请先用「预览」导出成 JPG 再处理。
 - ❌ **不是无损压缩**：JPEG/WebP 重新编码必然有损，`--quality` 越低越明显；PNG 没有 quality 参数，
-  这里用 `--quality` 映射调色板颜色数（82 ≈ 190 色），属于**减色**，不是无损。
+  这里用 `--quality` 映射调色板颜色数（82 ≈ 200 色），属于**减色**，不是无损。
   要像素级不变只能 `strip`（对 JPEG 沿用原量化表，几乎不重压缩）。
 - ❌ **不保留元数据**：compress / resize / watermark / convert 默认丢掉 EXIF 与 ICC；需要保留时加 `--keep-exif`，
   但方向（Orientation）会被去掉 —— 因为缩放时已经按 EXIF 方向把画面旋正，留着会二次旋转。

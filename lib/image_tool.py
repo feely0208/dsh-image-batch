@@ -185,6 +185,7 @@ def collect_images(input_path, out_dir=None):
         )
 
     skip_out = str(out_dir.resolve()) if out_dir else None
+    root_key = str(root)
     files, skipped = [], []
     for dirpath, dirnames, filenames in os.walk(root):
         current = Path(dirpath)
@@ -192,8 +193,9 @@ def collect_images(input_path, out_dir=None):
             [d for d in dirnames if d not in SKIP_DIRS and not d.startswith(".")],
             key=natural_key,
         )
-        if skip_out and str(current.resolve()) == skip_out:
-            dirnames[:] = []  # 不把自己上次的产物当输入
+        # 只跳过「输出目录」本身（嵌套在输入目录里时），输入目录自己不能跳过
+        if skip_out and skip_out != root_key and str(current.resolve()) == skip_out:
+            dirnames[:] = []
             continue
         for name in filenames:
             if name.startswith("."):
@@ -350,7 +352,7 @@ def exif_for_save(raw, keep):
 
 
 def png_colors(quality):
-    """把 --quality 映射成 PNG 调色板颜色数：82 → 约 190 色。"""
+    """把 --quality 映射成 PNG 调色板颜色数：82 → 约 200 色。"""
     q = max(1, min(100, int(quality)))
     return max(8, min(256, int(round(256 * (q / 100.0) ** 1.3))))
 
@@ -469,6 +471,8 @@ def build_result(action, raw_input, out, records, skipped, failed, summary, extr
 
 def begin(payload):
     raw_input = payload.get("input")
+    if not raw_input:
+        raise ToolError("缺少 --input（文件或目录）", "例：compress --input ./图片目录")
     out = resolve_out(payload, raw_input)
     files, skipped = collect_images(raw_input, out)
     out.mkdir(parents=True, exist_ok=True)
@@ -814,9 +818,9 @@ def action_demo(payload):
     return {
         "ok": True,
         "action": "demo",
-        "demoRoot": str(root),
+        "demoRoot": str(root.resolve()),
         "steps": steps,
-        "inputDir": str(inputs),
+        "inputDir": str(inputs.resolve()),
         "summary": "演示完成：%d 个动作全部跑通，产物 %d 个" % (len(steps), len(artifacts)),
         "artifacts": artifacts,
     }

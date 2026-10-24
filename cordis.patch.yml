@@ -1,0 +1,4 @@
+# @deepwhale-cn/dsh-image-batch 的组合层：装上即注册 image-batch skill
+- insert:
+    - id: image-batch
+      name: '@deepwhale-cn/dsh-image-batch'
